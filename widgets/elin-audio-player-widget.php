@@ -64,6 +64,27 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
         );
 
         $this->add_control(
+            'title_tag',
+            [
+                'label' => __('تگ عنوان', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'options' => [
+                    'h1' => 'H1',
+                    'h2' => 'H2',
+                    'h3' => 'H3',
+                    'h4' => 'H4',
+                    'h5' => 'H5',
+                    'h6' => 'H6',
+                    'div' => 'div',
+                    'span' => 'span',
+                    'p' => 'p',
+                ],
+                'default' => 'h2',
+                'condition' => ['title!' => ''],
+            ]
+        );
+
+        $this->add_control(
             'description',
             [
                 'label' => __('توضیحات', 'elin-audio-player'),
@@ -427,6 +448,20 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
     }
 
     /**
+     * Whitelisted tag for the title. A saved value can be anything, so it is
+     * never printed unless it is one of the tags the control offers.
+     */
+    private function title_tag($settings)
+    {
+
+        $allowed = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'div', 'span', 'p'];
+
+        $tag = isset($settings['title_tag']) ? strtolower($settings['title_tag']) : 'h2';
+
+        return in_array($tag, $allowed, true) ? $tag : 'h2';
+    }
+
+    /**
      * Fallback headphones glyph, used when no icon image is set.
      */
     private function default_icon()
@@ -540,9 +575,10 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
                 <?php endif; ?>
 
                 <?php if (! empty($settings['title'])) : ?>
-                    <h2 class="elin-player-title">
+                    <?php $title_tag = $this->title_tag($settings); ?>
+                    <<?php echo $title_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> class="elin-player-title">
                         <?php echo esc_html($settings['title']); ?>
-                    </h2>
+                    </<?php echo $title_tag; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
                 <?php endif; ?>
 
                 <?php if (! empty($settings['description'])) : ?>
