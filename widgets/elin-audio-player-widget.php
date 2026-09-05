@@ -77,7 +77,46 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
             [
                 'label' => __('برچسب مدت زمان', 'elin-audio-player'),
                 'type' => \Elementor\Controls_Manager::TEXT,
-                'default' => __('زمان مورد نیاز:', 'elin-audio-player'),
+                'default' => __('زمان مورد نیاز :', 'elin-audio-player'),
+            ]
+        );
+
+        $this->add_control(
+            'duration_unit',
+            [
+                'label' => __('واحد مدت زمان', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::TEXT,
+                'default' => __('دقیقه', 'elin-audio-player'),
+                'condition' => ['duration_label!' => ''],
+            ]
+        );
+
+        $this->add_control(
+            'persian_digits',
+            [
+                'label' => __('ارقام فارسی برای مدت زمان', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'default' => 'yes',
+                'condition' => ['duration_label!' => ''],
+            ]
+        );
+
+        $this->add_control(
+            'show_icon',
+            [
+                'label' => __('نمایش آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::SWITCHER,
+                'default' => 'yes',
+            ]
+        );
+
+        $this->add_control(
+            'icon_image',
+            [
+                'label' => __('تصویر آیکون (اختیاری)', 'elin-audio-player'),
+                'description' => __('خالی بگذارید تا آیکون پیش‌فرض هدفون نمایش داده شود.', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::MEDIA,
+                'condition' => ['show_icon' => 'yes'],
             ]
         );
 
@@ -160,6 +199,71 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
                 'size_units' => ['px', 'em', 'rem'],
                 'selectors' => [
                     '{{WRAPPER}} .elin-player' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->end_controls_section();
+
+        /* =========================
+           STYLE — ICON
+        ========================= */
+
+        $this->start_controls_section(
+            'style_icon_section',
+            [
+                'label' => __('آیکون', 'elin-audio-player'),
+                'tab' => \Elementor\Controls_Manager::TAB_STYLE,
+                'condition' => ['show_icon' => 'yes'],
+            ]
+        );
+
+        $this->add_control(
+            'icon_background',
+            [
+                'label' => __('پس‌زمینه آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#61B09B',
+                'selectors' => [
+                    '{{WRAPPER}} .elin-player' => '--elin-icon-bg: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_control(
+            'icon_glyph_color',
+            [
+                'label' => __('رنگ آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::COLOR,
+                'default' => '#FFFFFF',
+                'selectors' => [
+                    '{{WRAPPER}} .elin-player' => '--elin-icon-glyph: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'icon_box_size',
+            [
+                'label' => __('اندازه آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px'],
+                'range' => ['px' => ['min' => 32, 'max' => 96]],
+                'selectors' => [
+                    '{{WRAPPER}} .elin-player' => '--elin-icon-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'icon_box_radius',
+            [
+                'label' => __('گردی گوشه آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px', '%'],
+                'range' => ['px' => ['min' => 0, 'max' => 48]],
+                'selectors' => [
+                    '{{WRAPPER}} .elin-player' => '--elin-icon-radius: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -323,6 +427,19 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
     }
 
     /**
+     * Fallback headphones glyph, used when no icon image is set.
+     */
+    private function default_icon()
+    {
+
+        return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">'
+            . '<path d="M4 14.5V12a8 8 0 0 1 16 0v2.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />'
+            . '<rect x="2.6" y="13.6" width="4.2" height="7.2" rx="2.1" stroke="currentColor" stroke-width="1.8" />'
+            . '<rect x="17.2" y="13.6" width="4.2" height="7.2" rx="2.1" stroke="currentColor" stroke-width="1.8" />'
+            . '</svg>';
+    }
+
+    /**
      * Skip icon, mirrored for the forward button.
      */
     private function skip_icon($direction)
@@ -397,13 +514,14 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
             'id' => 'elin-player-' . $this->get_id(),
             'data-audio' => esc_url($audio),
             'data-skip' => $skip,
+            'data-persian-digits' => ('yes' === $settings['persian_digits'] ? '1' : '0'),
             'data-wave-color' => ! empty($settings['wave_color']) ? $settings['wave_color'] : '#c5cad3',
             'data-progress-color' => ! empty($settings['progress_color']) ? $settings['progress_color'] : '#6bb29d',
             'data-progress-color-mobile' => ! empty($settings['progress_color_mobile']) ? $settings['progress_color_mobile'] : '#667085',
         ]);
 
-        /* translators: %s: number of seconds to skip */
-        $skip_label = sprintf(__('%s ثانیه', 'elin-audio-player'), $skip);
+        /* translators: %s: number of seconds to skip, e.g. "15s" */
+        $skip_label = sprintf(__('%ss', 'elin-audio-player'), $skip);
 
 ?>
 
@@ -411,28 +529,35 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
 
             <div class="elin-top">
 
-                <div class="elin-player-content">
+                <?php if ('yes' === $settings['show_icon']) : ?>
+                    <div class="elin-player-icon">
+                        <?php if (! empty($settings['icon_image']['url'])) : ?>
+                            <img src="<?php echo esc_url($settings['icon_image']['url']); ?>" alt="" />
+                        <?php else : ?>
+                            <?php echo $this->default_icon(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
 
-                    <?php if (! empty($settings['title'])) : ?>
-                        <h2 class="elin-player-title">
-                            <?php echo esc_html($settings['title']); ?>
-                        </h2>
-                    <?php endif; ?>
+                <?php if (! empty($settings['title'])) : ?>
+                    <h2 class="elin-player-title">
+                        <?php echo esc_html($settings['title']); ?>
+                    </h2>
+                <?php endif; ?>
 
-                    <?php if (! empty($settings['description'])) : ?>
-                        <p class="elin-player-description">
-                            <?php echo esc_html($settings['description']); ?>
-                        </p>
-                    <?php endif; ?>
+                <?php if (! empty($settings['description'])) : ?>
+                    <p class="elin-player-description">
+                        <?php echo esc_html($settings['description']); ?>
+                    </p>
+                <?php endif; ?>
 
-                    <?php if (! empty($settings['duration_label'])) : ?>
-                        <span class="elin-duration-label">
-                            <?php echo esc_html($settings['duration_label']); ?>
-                            <span class="total-time">00:00</span>
-                        </span>
-                    <?php endif; ?>
-
-                </div>
+                <?php if (! empty($settings['duration_label'])) : ?>
+                    <span class="elin-duration-label">
+                        <?php echo esc_html($settings['duration_label']); ?>
+                        <span class="total-minutes">&mdash;</span>
+                        <?php echo esc_html($settings['duration_unit']); ?>
+                    </span>
+                <?php endif; ?>
 
             </div>
 

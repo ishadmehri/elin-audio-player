@@ -20,6 +20,11 @@
     --elin-controls-bg: #f9fafb;
     --elin-controls-border: #eaecf0;
 
+    --elin-icon-bg: #61b09b;
+    --elin-icon-glyph: #fff;
+    --elin-icon-size: 56px;
+    --elin-icon-radius: 12px;
+
     background: var(--elin-bg);
     border: 1px solid var(--elin-border);
     border-radius: var(--elin-radius);
@@ -37,32 +42,99 @@
 }
 
 /* =========================
-    TEXT
+    HEADER
 ========================= */
+
+/* Grid rather than nested flex rows: the duration and the description
+   swap places between desktop and mobile, and grid areas do that without
+   duplicating the markup. In RTL the first column is the rightmost one. */
+.elin-top {
+
+    display: grid;
+
+    grid-template-columns: auto 1fr auto;
+
+    grid-template-areas:
+        "icon title ."
+        "icon desc  duration";
+
+    align-items: start;
+
+    column-gap: 12px;
+    row-gap: 4px;
+}
+
+.elin-player-icon {
+
+    grid-area: icon;
+
+    align-self: start;
+
+    width: var(--elin-icon-size);
+    height: var(--elin-icon-size);
+
+    border-radius: var(--elin-icon-radius);
+
+    background: var(--elin-icon-bg);
+    color: var(--elin-icon-glyph);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+.elin-player-icon svg {
+    width: 55%;
+    height: 55%;
+}
+
+.elin-player-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 
 .elin-player-title {
 
+    grid-area: title;
+
     margin: 0;
 
-    font-size: 32px;
+    min-width: 0;
+
+    font-size: 20px;
 
     font-weight: 700;
+
+    line-height: 1.4;
 
     color: var(--elin-title-color);
 }
 
 .elin-player-description {
 
+    grid-area: desc;
+
+    margin: 0;
+
+    min-width: 0;
+
     color: var(--elin-text-color);
 
-    margin-top: 8px;
+    font-size: 14px;
 }
 
 .elin-duration-label {
 
+    grid-area: duration;
+
     color: var(--elin-text-color);
 
-    display: inline-block;
+    font-size: 14px;
+
+    white-space: nowrap;
 }
 
 /* =========================
@@ -103,12 +175,14 @@
     flex-wrap: nowrap;
 
     border: 1px solid var(--elin-controls-border);
-    padding: 0 16px;
+    padding: 8px 16px;
     border-radius: 8px;
     background: var(--elin-controls-bg);
 }
 
-.elin-controls button {
+/* Scoped to .play-wrap: a bare `.elin-controls button` reset outranks the
+   .speed-step / .mobile-speed-btn rules below and blanks them out. */
+.elin-controls .play-wrap button {
 
     border: none;
 
@@ -186,8 +260,13 @@ button.play .icon-pause,
 
 .speed-label {
     direction: rtl;
-    width: 100%;
+    white-space: nowrap;
     color: var(--elin-text-color);
+    font-size: 14px;
+}
+
+.skip-label {
+    white-space: nowrap;
 }
 
 /* =========================
@@ -389,24 +468,65 @@ button.play .icon-pause,
         padding: 16px;
     }
 
+    /* Duration moves under the title, description drops to its own row. */
+    .elin-top {
+        grid-template-columns: auto 1fr;
+        grid-template-areas:
+            "icon title"
+            "icon duration"
+            "desc desc";
+        row-gap: 2px;
+    }
+
+    .elin-player {
+        --elin-icon-size: 48px;
+    }
+
     .elin-player-title {
-        font-size: 20px;
+        font-size: 16px;
+    }
+
+    .elin-player-description {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .elin-duration-label {
+        font-size: 12px;
     }
 
     .speed-wrap {
         gap: 4px;
     }
 
+    /* The row is nowrap, so everything shrinks together to keep the card
+       inside the viewport rather than dropping the label. */
     .speed-label {
-        font-size: 10px;
+        font-size: 11px;
     }
 
     .play-wrap {
-        gap: 8px;
+        gap: 4px;
+    }
+
+    button.play {
+        width: 40px;
+        height: 40px;
+    }
+
+    button.play .icon-play {
+        width: 20px;
+        height: 21px;
+    }
+
+    .elin-controls .play-wrap button {
+        font-size: 12px;
+        padding: 6px;
     }
 
     .elin-controls {
         padding: 8px;
+        gap: 8px;
     }
 
 }

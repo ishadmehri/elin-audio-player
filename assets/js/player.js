@@ -44,6 +44,14 @@
     return (hrs > 0 ? hrs + ":" + pad(mins) : pad(mins)) + ":" + pad(secs);
   }
 
+  var FA_DIGITS = ["۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"];
+
+  function toPersianDigits(value) {
+    return String(value).replace(/\d/g, function (d) {
+      return FA_DIGITS[d];
+    });
+  }
+
   function initPlayer(el) {
     var player = $(el);
 
@@ -217,8 +225,19 @@
        TIME READOUT
     ========================= */
 
+    var usePersianDigits = String(player.data("persian-digits")) !== "0";
+
     wavesurfer.on("ready", function () {
-      player.find(".total-time").text(formatTime(wavesurfer.getDuration()));
+      var duration = wavesurfer.getDuration();
+
+      player.find(".total-time").text(formatTime(duration));
+
+      /* Header shows a rounded minute count, not mm:ss. */
+      var minutes = Math.max(1, Math.round(duration / 60));
+
+      player
+        .find(".total-minutes")
+        .text(usePersianDigits ? toPersianDigits(minutes) : minutes);
 
       /* Layout is settled by now, so the knob lands on the right step. */
       setSpeed(currentSpeed);

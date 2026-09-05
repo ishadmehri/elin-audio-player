@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Elin Audio Player
  * Description: Custom Elementor Podcast Audio Player
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: Elin
  * Text Domain: elin-audio-player
  * Domain Path: /languages
@@ -12,7 +12,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define('ELIN_AUDIO_VERSION', '1.1.0');
+define('ELIN_AUDIO_VERSION', '1.2.0');
 define('ELIN_AUDIO_URL', plugin_dir_url(__FILE__));
 define('ELIN_AUDIO_PATH', plugin_dir_path(__FILE__));
 
@@ -89,10 +89,24 @@ function elin_audio_init(){
         'elin_audio_enqueue_assets'
     );
 
+    /**
+     * Inside the editor preview iframe the widget is injected over AJAX, so
+     * get_script_depends() never gets a chance to print its assets. Enqueue
+     * them up front there instead of only registering them.
+     */
     add_action(
-        'elementor/editor/after_enqueue_scripts',
-        'elin_audio_enqueue_assets'
+        'elementor/preview/enqueue_scripts',
+        'elin_audio_enqueue_preview_assets'
     );
+}
+
+function elin_audio_enqueue_preview_assets(){
+
+    elin_audio_enqueue_assets();
+
+    wp_enqueue_style('elin-audio-style');
+    wp_enqueue_script('wavesurfer');
+    wp_enqueue_script('elin-audio-script');
 }
 
 add_action(
