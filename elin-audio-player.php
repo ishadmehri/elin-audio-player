@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Elin Audio Player
  * Description: Custom Elementor Podcast Audio Player
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: Elin
  * Text Domain: elin-audio-player
  * Domain Path: /languages
@@ -12,7 +12,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define('ELIN_AUDIO_VERSION', '1.3.0');
+define('ELIN_AUDIO_VERSION', '1.4.0');
 define('ELIN_AUDIO_URL', plugin_dir_url(__FILE__));
 define('ELIN_AUDIO_PATH', plugin_dir_path(__FILE__));
 

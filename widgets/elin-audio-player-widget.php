@@ -132,11 +132,12 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
         );
 
         $this->add_control(
-            'icon_image',
+            'selected_icon',
             [
-                'label' => __('تصویر آیکون (اختیاری)', 'elin-audio-player'),
-                'description' => __('خالی بگذارید تا آیکون پیش‌فرض هدفون نمایش داده شود.', 'elin-audio-player'),
-                'type' => \Elementor\Controls_Manager::MEDIA,
+                'label' => __('آیکون', 'elin-audio-player'),
+                'description' => __('یک آیکون انتخاب کنید یا SVG خودتان را بارگذاری کنید. خالی بگذارید تا آیکون پیش‌فرض هدفون نمایش داده شود.', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::ICONS,
+                'skin' => 'inline',
                 'condition' => ['show_icon' => 'yes'],
             ]
         );
@@ -263,15 +264,41 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
             ]
         );
 
+        /* The tile is sized by glyph + padding rather than a fixed box, so
+           the two controls stay independent of each other. */
         $this->add_responsive_control(
             'icon_box_size',
             [
                 'label' => __('اندازه آیکون', 'elin-audio-player'),
                 'type' => \Elementor\Controls_Manager::SLIDER,
-                'size_units' => ['px'],
-                'range' => ['px' => ['min' => 32, 'max' => 96]],
+                'size_units' => ['px', 'em', 'rem'],
+                'range' => [
+                    'px' => ['min' => 12, 'max' => 72],
+                    'em' => ['min' => 0.5, 'max' => 5, 'step' => 0.1],
+                ],
+                'default' => ['unit' => 'px', 'size' => 28],
                 'selectors' => [
-                    '{{WRAPPER}} .elin-player' => '--elin-icon-size: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .elin-player' => '--elin-icon-glyph-size: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'icon_padding',
+            [
+                'label' => __('فاصله داخلی آیکون', 'elin-audio-player'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', 'rem', '%'],
+                'default' => [
+                    'unit' => 'px',
+                    'top' => 14,
+                    'right' => 14,
+                    'bottom' => 14,
+                    'left' => 14,
+                    'isLinked' => true,
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .elin-player-icon' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -280,11 +307,18 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
             'icon_box_radius',
             [
                 'label' => __('گردی گوشه آیکون', 'elin-audio-player'),
-                'type' => \Elementor\Controls_Manager::SLIDER,
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
                 'size_units' => ['px', '%'],
-                'range' => ['px' => ['min' => 0, 'max' => 48]],
+                'default' => [
+                    'unit' => 'px',
+                    'top' => 12,
+                    'right' => 12,
+                    'bottom' => 12,
+                    'left' => 12,
+                    'isLinked' => true,
+                ],
                 'selectors' => [
-                    '{{WRAPPER}} .elin-player' => '--elin-icon-radius: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .elin-player-icon' => 'border-radius: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -566,8 +600,8 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
 
                 <?php if ('yes' === $settings['show_icon']) : ?>
                     <div class="elin-player-icon">
-                        <?php if (! empty($settings['icon_image']['url'])) : ?>
-                            <img src="<?php echo esc_url($settings['icon_image']['url']); ?>" alt="" />
+                        <?php if (! empty($settings['selected_icon']['value'])) : ?>
+                            <?php \Elementor\Icons_Manager::render_icon($settings['selected_icon'], ['aria-hidden' => 'true']); ?>
                         <?php else : ?>
                             <?php echo $this->default_icon(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                         <?php endif; ?>

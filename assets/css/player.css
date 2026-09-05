@@ -22,7 +22,8 @@
 
     --elin-icon-bg: #61b09b;
     --elin-icon-glyph: #fff;
-    --elin-icon-size: 56px;
+    --elin-icon-glyph-size: 28px;
+    --elin-icon-padding: 14px;
     --elin-icon-radius: 12px;
 
     background: var(--elin-bg);
@@ -64,14 +65,16 @@
     row-gap: 4px;
 }
 
+/* The tile is glyph + padding, not a fixed square, so the size and the
+   padding controls do not fight over the same box. */
 .elin-player-icon {
 
     grid-area: icon;
 
     align-self: start;
+    justify-self: start;
 
-    width: var(--elin-icon-size);
-    height: var(--elin-icon-size);
+    padding: var(--elin-icon-padding);
 
     border-radius: var(--elin-icon-radius);
 
@@ -82,18 +85,35 @@
     align-items: center;
     justify-content: center;
 
+    font-size: var(--elin-icon-glyph-size);
+    line-height: 1;
+
     overflow: hidden;
 }
 
-.elin-player-icon svg {
-    width: 55%;
-    height: 55%;
+/* One size control drives an inline SVG, an icon font and an <img>
+   alike, through the container's font-size. Fill is left to the icon so
+   an uploaded SVG keeps its own colours; the default glyph strokes with
+   currentColor and follows the colour control. */
+.elin-player-icon svg,
+.elin-player-icon img {
+    display: block;
+    width: 1em;
+    height: 1em;
 }
 
-.elin-player-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+/* An icon font's glyph is not square, which would leave the tile taller
+   than it is wide, so it gets a square box of its own. */
+.elin-player-icon i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 1em;
+    height: 1em;
+
+    font-size: 1em;
+    line-height: 1;
 }
 
 .elin-player-title {
@@ -479,7 +499,8 @@ button.play .icon-pause,
     }
 
     .elin-player {
-        --elin-icon-size: 48px;
+        --elin-icon-glyph-size: 24px;
+        --elin-icon-padding: 12px;
     }
 
     .elin-player-title {
