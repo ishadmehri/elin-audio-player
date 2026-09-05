@@ -1,0 +1,420 @@
+/* =========================
+    TOKENS
+   Every colour is a custom property so the Elementor
+   style controls can override it per widget instance.
+========================= */
+
+.elin-player {
+
+    --elin-bg: #fcfcfc;
+    --elin-border: #d0d5dd;
+    --elin-radius: 16px;
+
+    --elin-title-color: #111827;
+    --elin-text-color: #6b7280;
+
+    --elin-accent: #61b09b;
+    --elin-icon-color: #344054;
+    --elin-play-color: #101828;
+
+    --elin-controls-bg: #f9fafb;
+    --elin-controls-border: #eaecf0;
+
+    background: var(--elin-bg);
+    border: 1px solid var(--elin-border);
+    border-radius: var(--elin-radius);
+
+    padding: 32px;
+
+    direction: rtl;
+
+    font-family: inherit;
+}
+
+.elin-time,
+.elin-controls {
+    direction: ltr;
+}
+
+/* =========================
+    TEXT
+========================= */
+
+.elin-player-title {
+
+    margin: 0;
+
+    font-size: 32px;
+
+    font-weight: 700;
+
+    color: var(--elin-title-color);
+}
+
+.elin-player-description {
+
+    color: var(--elin-text-color);
+
+    margin-top: 8px;
+}
+
+.elin-duration-label {
+
+    color: var(--elin-text-color);
+
+    display: inline-block;
+}
+
+/* =========================
+    WAVEFORM
+========================= */
+
+.waveform {
+    width: 100%;
+    margin: 24px 0;
+}
+
+.elin-time {
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    color: var(--elin-text-color);
+
+    margin-top: 20px;
+}
+
+/* =========================
+    CONTROLS
+========================= */
+
+.elin-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    flex-wrap: nowrap;
+
+    border: 1px solid var(--elin-controls-border);
+    padding: 0 16px;
+    border-radius: 8px;
+    background: var(--elin-controls-bg);
+}
+
+.elin-controls button {
+
+    border: none;
+
+    background: transparent;
+
+    border-radius: 14px;
+    padding: 8px;
+
+    cursor: pointer;
+
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--elin-icon-color);
+}
+
+.elin-controls button:focus-visible {
+    outline: 2px solid var(--elin-accent);
+    outline-offset: 2px;
+}
+
+button.play {
+    width: 56px;
+
+    height: 56px;
+
+    border-radius: 50% !important;
+
+    color: var(--elin-play-color);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Both icons ship in the markup; only the relevant one is shown. */
+
+button.play .icon-play {
+    margin-left: 3px;
+}
+
+button.play .icon-pause,
+.is-playing button.play .icon-play {
+    display: none;
+}
+
+.is-playing button.play .icon-pause {
+    display: block;
+}
+
+.backward,
+.forward {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.backward svg,
+.forward svg {
+    margin-top: 3px;
+}
+
+.play-wrap {
+    display: flex;
+    gap: 24px;
+}
+
+.speed-wrap {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+}
+
+.speed-label {
+    direction: rtl;
+    width: 100%;
+    color: var(--elin-text-color);
+}
+
+/* =========================
+    SPEED SLIDER
+========================= */
+
+.speed-value {
+
+    width: 28px;
+
+    height: 28px;
+
+    border-radius: 50%;
+
+    background: var(--elin-accent);
+
+    color: #fff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.speed-controller {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.speed-slider {
+    width: 200px;
+    height: 70px;
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.speed-line {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: #ddd;
+    border-radius: 10px;
+}
+
+.speed-step {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--elin-accent);
+    cursor: pointer;
+    z-index: 1;
+}
+
+.speed-step:focus-visible {
+    outline: 2px solid var(--elin-accent);
+    outline-offset: 3px;
+}
+
+.speed-knob {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--elin-accent);
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+
+    transition: .25s ease;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+    user-select: none;
+}
+
+/* =========================
+    MOBILE
+========================= */
+
+.mobile-speed {
+    display: none;
+}
+
+/* دکمه اصلی */
+
+.mobile-speed-btn {
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--elin-accent);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+/* popup */
+
+.mobile-popup {
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, .35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: .2s ease;
+
+    z-index: 999;
+}
+
+.mobile-popup.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.mobile-popup-content {
+    width: 90%;
+    max-width: 360px;
+
+    background: #fff;
+    border-radius: 24px;
+
+    padding: 40px 20px;
+}
+
+/* slider inside popup */
+
+.mobile-speed-slider {
+    width: 100%;
+    height: 70px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* =========================
+    EDITOR PLACEHOLDER
+========================= */
+
+.elin-player-empty {
+    color: var(--elin-text-color);
+    text-align: center;
+}
+
+/* =========================
+    RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+
+    .speed-controller {
+        display: none;
+    }
+
+    .mobile-speed {
+        display: flex;
+        justify-content: center;
+    }
+
+    .elin-player {
+        padding: 16px;
+    }
+
+    .elin-player-title {
+        font-size: 20px;
+    }
+
+    .speed-wrap {
+        gap: 4px;
+    }
+
+    .speed-label {
+        font-size: 10px;
+    }
+
+    .play-wrap {
+        gap: 8px;
+    }
+
+    .elin-controls {
+        padding: 8px;
+    }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .speed-knob,
+    .mobile-popup {
+        transition: none;
+    }
+}
