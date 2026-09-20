@@ -52,6 +52,23 @@
     });
   }
 
+  function showDuration(player, duration) {
+    if (!isFinite(duration) || duration <= 0) return;
+
+    player.find(".total-time").text(formatTime(duration));
+
+    /* Header shows a rounded minute count, not mm:ss. */
+    var minutes = Math.max(1, Math.round(duration / 60));
+
+    player
+      .find(".total-minutes")
+      .text(
+        String(player.data("persian-digits")) !== "0"
+          ? toPersianDigits(minutes)
+          : minutes
+      );
+  }
+
   function initPlayer(el) {
     var player = $(el);
 
@@ -225,26 +242,17 @@
        TIME READOUT
     ========================= */
 
-    var usePersianDigits = String(player.data("persian-digits")) !== "0";
+    var currentTimeEl = player.find(".current-time");
 
     wavesurfer.on("ready", function () {
-      var duration = wavesurfer.getDuration();
-
-      player.find(".total-time").text(formatTime(duration));
-
-      /* Header shows a rounded minute count, not mm:ss. */
-      var minutes = Math.max(1, Math.round(duration / 60));
-
-      player
-        .find(".total-minutes")
-        .text(usePersianDigits ? toPersianDigits(minutes) : minutes);
+      showDuration(player, wavesurfer.getDuration());
 
       /* Layout is settled by now, so the knob lands on the right step. */
       setSpeed(currentSpeed);
     });
 
     wavesurfer.on("timeupdate", function () {
-      player.find(".current-time").text(formatTime(wavesurfer.getCurrentTime()));
+      currentTimeEl.text(formatTime(wavesurfer.getCurrentTime()));
     });
 
     wavesurfer.on("error", function () {
@@ -275,12 +283,53 @@
     setSpeed(1);
   }
 
+  /* WaveSurfer has no peaks to work from, so creating it downloads the whole
+     file and decodes it — see loadAudio(): it only skips fetchBlob when peaks
+     are supplied. Deferring that to the first time the player is near the
+     viewport keeps a page of players from pulling every episode at once. */
+  function whenVisible(el, callback) {
+    if (!window.IntersectionObserver) return callback();
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        if (!entries[0].isIntersecting) return;
+
+        observer.disconnect();
+        callback();
+      },
+      { rootMargin: "200px" }
+    );
+
+    observer.observe(el);
+  }
+
+  /* The duration alone is in the file header, so a metadata-only probe fills
+     the header in a few KB instead of waiting for the full decode. */
+  function probeDuration(player, url) {
+    var probe = new Audio();
+
+    probe.preload = "metadata";
+
+    probe.addEventListener("loadedmetadata", function () {
+      showDuration(player, probe.duration);
+    });
+
+    probe.src = url;
+  }
+
   function initAll(scope) {
     $(scope || document)
       .find(".elin-player")
       .addBack(".elin-player")
       .each(function () {
-        initPlayer(this);
+        var el = this;
+        var url = $(el).data("audio");
+
+        if (url) probeDuration($(el), url);
+
+        whenVisible(el, function () {
+          initPlayer(el);
+        });
       });
   }
 
