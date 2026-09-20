@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Elin Audio Player
  * Description: Custom Elementor Podcast Audio Player
- * Version: 1.5.0
+ * Version: 1.6.0
  * Author: Elin
  * Text Domain: elin-audio-player
  * Domain Path: /languages
@@ -12,11 +12,15 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define('ELIN_AUDIO_VERSION', '1.5.0');
+define('ELIN_AUDIO_VERSION', '1.6.0');
 define('ELIN_AUDIO_URL', plugin_dir_url(__FILE__));
 define('ELIN_AUDIO_PATH', plugin_dir_path(__FILE__));
 
 define('ELIN_AUDIO_MIN_ELEMENTOR_VERSION', '3.5.0');
+
+/* Loaded unconditionally: the cron hook that generates peaks has to exist on
+   requests that never touch Elementor. */
+require_once ELIN_AUDIO_PATH . 'includes/peaks.php';
 
 function elin_audio_load_textdomain(){
 

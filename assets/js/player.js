@@ -52,6 +52,22 @@
     });
   }
 
+  /* Returns the peaks array the server rendered, or null to decode in the
+     browser. Bad JSON must not take the whole player down with it. */
+  function precomputedPeaks(player) {
+    var raw = player.attr("data-peaks");
+    var duration = parseFloat(player.attr("data-duration"));
+
+    if (!raw || !duration) return null;
+
+    try {
+      var peaks = JSON.parse(raw);
+      return peaks && peaks.length ? peaks : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
   function showDuration(player, duration) {
     if (!isFinite(duration) || duration <= 0) return;
 
@@ -82,16 +98,26 @@
 
     player.data("elinInitialised", true);
 
-    var wavesurfer = WaveSurfer.create(
-      $.extend(
-        {
-          container: waveform,
-          url: audio,
-          cursorWidth: 0,
-        },
-        waveOptions(player)
-      )
+    var options = $.extend(
+      {
+        container: waveform,
+        url: audio,
+        cursorWidth: 0,
+      },
+      waveOptions(player)
     );
+
+    /* Server-side peaks: loadAudio() skips fetchBlob when these are set, so
+       the file is only streamed once playback starts. Both are required —
+       peaks without a duration are ignored. */
+    var peaks = precomputedPeaks(player);
+
+    if (peaks) {
+      options.peaks = [peaks];
+      options.duration = parseFloat(player.attr("data-duration"));
+    }
+
+    var wavesurfer = WaveSurfer.create(options);
 
     var skip = parseInt(player.data("skip"), 10);
     if (!skip || skip < 1) skip = 15;
@@ -323,9 +349,13 @@
       .addBack(".elin-player")
       .each(function () {
         var el = this;
-        var url = $(el).data("audio");
+        var player = $(el);
+        var url = player.data("audio");
+        var known = parseFloat(player.attr("data-duration"));
 
-        if (url) probeDuration($(el), url);
+        /* The server already knows the duration when it rendered peaks. */
+        if (known) showDuration(player, known);
+        else if (url) probeDuration(player, url);
 
         whenVisible(el, function () {
           initPlayer(el);

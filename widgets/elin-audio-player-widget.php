@@ -589,6 +589,20 @@ class ElinAudioPlayerWidget extends \Elementor\Widget_Base
             'data-progress-color-mobile' => ! empty($settings['progress_color_mobile']) ? $settings['progress_color_mobile'] : '#667085',
         ]);
 
+        /* With peaks the browser never downloads the file to draw the wave.
+           Without them — no ffmpeg, not a local attachment, still queued —
+           the player decodes in the browser exactly as it did before. */
+        $peaks = ! empty($settings['audio_file']['id'])
+            ? elin_audio_peaks_for_attachment((int) $settings['audio_file']['id'])
+            : null;
+
+        if ($peaks) {
+            $this->add_render_attribute('player', [
+                'data-peaks' => wp_json_encode($peaks['peaks']),
+                'data-duration' => $peaks['duration'],
+            ]);
+        }
+
         /* translators: %s: number of seconds to skip, e.g. "15s" */
         $skip_label = sprintf(__('%ss', 'elin-audio-player'), $skip);
 
